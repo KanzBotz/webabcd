@@ -21,7 +21,7 @@ body {
   justify-content: center;
   padding: 15px;
   font-family: 'Fira Code', monospace;
-  color: #00ff66; /* Warna hijau terminal klasik */
+  color: #00ff66;
 }
 
 /* Efek garis halus layar kaca CRT jadul */
@@ -36,6 +36,7 @@ body::before {
   pointer-events: none;
 }
 
+/* Kotak Terminal dengan Animasi Glitch Getar Lembut */
 .terminal {
   width: 100%;
   max-width: 460px;
@@ -46,6 +47,15 @@ body::before {
   box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
   position: relative;
   overflow: hidden;
+  animation: terminalGlitch 12s infinite;
+}
+
+@keyframes terminalGlitch {
+  0%, 93%, 100% { transform: translate(0, 0); }
+  94% { transform: translate(-2px, 1px); }
+  95% { transform: translate(2px, -1px); filter: hue-rotate(90deg); }
+  96% { transform: translate(-1px, -2px); }
+  97% { transform: translate(1px, 2px); filter: hue-rotate(0deg); }
 }
 
 /* Top Bar Windows Terminal */
@@ -71,8 +81,58 @@ body::before {
   color: rgba(0, 255, 102, 0.85);
 }
 
-.accent-pink { color: #ff0055; } /* Warna pink cyber untuk pembeda */
-.user-title { font-weight: 700; font-size: 20px; color: #fff; margin-bottom: 4px; }
+.accent-pink { color: #ff0055; }
+
+/* --- EFEK GLITCH PADA TEKS UTAMA --- */
+.user-title {
+  font-weight: 700;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 4px;
+  position: relative;
+  display: inline-block;
+}
+
+.user-title::before, .user-title::after {
+  content: "kanza ABCD";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #0e0e12;
+}
+
+.user-title::before {
+  color: #ff0055;
+  left: 2px;
+  text-shadow: -1px 0 #ff0055;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-anim-1 3s infinite linear alternate-reverse;
+}
+
+.user-title::after {
+  color: #00bfff;
+  left: -2px;
+  text-shadow: -1px 0 #00bfff;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-anim-2 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(40% 0 61% 0); }
+  20% { clip-path: inset(92% 0 1% 0); }
+  40% { clip-path: inset(15% 0 80% 0); }
+  60% { clip-path: inset(80% 0 5% 0); }
+  80% { clip-path: inset(3% 0 92% 0); }
+  100% { clip-path: inset(64% 0 32% 0); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(25% 0 58% 0); }
+  22% { clip-path: inset(14% 0 80% 0); }
+  49% { clip-path: inset(78% 0 12% 0); }
+  71% { clip-path: inset(32% 0 60% 0); }
+  90% { clip-path: inset(5% 0 91% 0); }
+  100% { clip-path: inset(88% 0 2% 0); }
+}
 
 /* Menu Perintah */
 .cmd-list {
@@ -93,7 +153,6 @@ body::before {
   position: relative;
 }
 
-/* Efek hover atau sentuh di HP */
 .cmd-line:hover, .cmd-line:active {
   background: #00ff66;
   color: #0e0e12;
@@ -140,34 +199,30 @@ body::before {
     <p>LAST LOGIN: <span class="accent-pink">FRI JUL 10 2026</span> ON GATEWAY</p>
     <p>CORE_SYSTEM: INITIALIZED SUCCESSFUL</p>
     <p style="color: #fff;">----------------------------------</p>
-    <div class="user-title">kanza ABCD</div>
+    <!-- Bagian teks dengan efek Glitch -->
+    <div class="user-title">kanza abcd</div>
     <p>STATUS: <span style="color: #fff; background: rgba(0,255,102,0.2); padding: 1px 6px; border-radius: 3px;">ONLINE</span></p>
   </div>
 
-  <!-- Blok Menu Perintah Eksekusi -->
+  <!-- Menu Perintah -->
   <div class="cmd-list">
-    <!-- Community Hub -->
     <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" class="cmd-line">
       execute --join-community
     </a>
 
-    <!-- Noir Bot (Baru) -->
     <a href="https://wa.me/6289505801095" target="_blank" class="cmd-line" style="color: #3b82f6; border-color: rgba(59, 130, 246, 0.5);">
       connect --noir-bot-system
     </a>
 
-    <!-- TikTok -->
     <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" class="cmd-line">
       fetch --tiktok-stream
     </a>
 
-    <!-- Contact Owner -->
     <a href="https://wa.me/6285716366564" target="_blank" class="cmd-line" style="color: #ff0055; border-color: rgba(255, 0, 85, 0.4);">
       call --owner-kanza
     </a>
   </div>
 
-  <!-- Input Simulasi Akhir -->
   <div class="output-log" style="margin-top: 25px; margin-bottom: 0;">
     <p>$ await next command...<span class="cursor">█</span></p>
   </div>
