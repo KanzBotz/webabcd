@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>noir abcd // Protocol</title>
+<title>noir@abcd:~</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
 
 * {
   margin: 0;
@@ -14,239 +14,167 @@
 }
 
 body {
-  background: url('https://ar-hosting.pages.dev/1782343925119.jpg') center/cover fixed;
+  background: #0a0a0c;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 25px 15px;
-  font-family: 'Space Grotesk', sans-serif;
-  color: #fff;
+  padding: 15px;
+  font-family: 'Fira Code', monospace;
+  color: #00ff66; /* Warna hijau terminal klasik */
 }
 
-/* Gelap pekat dengan sedikit filter ungu murni */
+/* Efek garis halus layar kaca CRT jadul */
 body::before {
-  content: '';
+  content: " ";
+  display: block;
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 10;
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+}
+
+.terminal {
   width: 100%;
-  height: 100%;
-  background: rgba(6, 6, 10, 0.92);
-  z-index: -1;
-}
-
-/* Konsep tanpa box utama besar - langsung tumpukan kartu */
-.wrapper {
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* --- Profile Section --- */
-.profile-block {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.avatar-frame {
-  width: 105px;
-  height: 105px;
-  margin: 0 auto 15px;
-  position: relative;
-}
-
-/* Bingkai Kotak Futuristik untuk Foto Profil */
-.avatar-frame::before {
-  content: '';
-  position: absolute;
-  top: -6px; left: -6px; right: -6px; bottom: -6px;
-  border: 2px solid #a78bfa;
-  border-radius: 16px;
-  animation: rotateBorder 8s linear infinite;
-}
-
-@keyframes rotateBorder {
-  0%, 100% { clip-path: inset(0 0 90% 0); border-color: #a78bfa; }
-  25% { clip-path: inset(0 0 0 90%); border-color: #ec4899; }
-  50% { clip-path: inset(90% 0 0 0); border-color: #3b82f6; }
-  75% { clip-path: inset(0 90% 0 0); border-color: #a78bfa; }
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 460px;
+  background: #0e0e12;
+  border: 2px solid #00ff66;
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.profile-block h1 {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255,255,255,0.2);
-}
-
-.tagline {
-  font-size: 12px;
-  color: #a78bfa;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  margin-top: 4px;
-}
-
-/* --- Tumpukan Kartu Link (Minimalis & Tajam) --- */
-.stack-card {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  background: #0f111a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  text-decoration: none;
-  color: #fff;
+  padding: 25px;
+  box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-/* Garis Glow di bagian bawah kartu saat di-hover */
-.stack-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #3b82f6, #a78bfa, #ec4899);
-  transition: width 0.4s ease;
+/* Top Bar Windows Terminal */
+.terminal-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 255, 102, 0.3);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: rgba(0, 255, 102, 0.6);
 }
 
-.stack-card:hover {
-  background: #141724;
-  border-color: rgba(167, 139, 250, 0.4);
-  transform: scale(1.02);
+.dots { display: flex; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 255, 102, 0.3); }
+
+/* Output Log System */
+.output-log {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: rgba(0, 255, 102, 0.85);
 }
 
-.stack-card:hover::after {
-  width: 100%;
+.accent-pink { color: #ff0055; } /* Warna pink cyber untuk pembeda */
+.user-title { font-weight: 700; font-size: 20px; color: #fff; margin-bottom: 4px; }
+
+/* Menu Perintah */
+.cmd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.icon-box {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-right: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.text-box {
-  flex: 1;
-}
-
-.title-text {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-}
-
-.desc-text {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-}
-
-.badge {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: #ec4899;
-  background: rgba(236, 72, 153, 0.1);
-  padding: 4px 10px;
+.cmd-line {
+  display: block;
+  text-decoration: none;
+  color: #00ff66;
+  border: 1px dashed rgba(0, 255, 102, 0.4);
+  padding: 14px 18px;
   border-radius: 6px;
-  border: 1px solid rgba(236, 72, 153, 0.2);
+  font-size: 13px;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-/* --- Label Kategori --- */
-.label-cat {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: rgba(255,255,255,0.3);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: -10px;
-  padding-left: 5px;
+/* Efek hover atau sentuh di HP */
+.cmd-line:hover, .cmd-line:active {
+  background: #00ff66;
+  color: #0e0e12;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+  transform: translateX(4px);
 }
 
-/* --- Footer --- */
-.system-footer {
+.cmd-line::before {
+  content: "$ ";
+  color: rgba(0, 255, 102, 0.6);
+}
+.cmd-line:hover::before { color: #0e0e12; }
+
+/* Kursor Berkedip */
+.cursor {
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.footer {
   text-align: center;
   margin-top: 30px;
-  font-family: 'Share Tech Mono', monospace;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 255, 102, 0.4);
 }
 </style>
 </head>
 <body>
 
-<div class="wrapper">
-
-  <!-- Header -->
-  <div class="profile-block">
-    <div class="avatar-frame">
-      <img src="https://ar-hosting.pages.dev/1782343925119.jpg" class="avatar" alt="noir">
-    </div>
-    <h1>NOIR ABCD</h1>
-    <div class="tagline">System.Assistant.7Ds</div>
+<div class="terminal">
+  <!-- Top Bar -->
+  <div class="terminal-bar">
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div>bash - noir@abcd:~</div>
+    <div>v1.0.9</div>
   </div>
 
-  <p class="label-cat">// Main Network</p>
-
-  <!-- Card 1: Grup WA -->
-  <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" class="stack-card">
-    <img src="https://ar-hosting.pages.dev/1782343925119.jpg" class="icon-box">
-    <div class="text-box">
-      <div class="title-text">COMMUNITY HUB</div>
-      <div class="desc-text">Join official group chat</div>
-    </div>
-    <span class="badge">OPEN</span>
-  </a>
-
-  <!-- Card 2: TikTok -->
-  <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" class="stack-card">
-    <img src="https://ar-hosting.pages.dev/1782343925119.jpg" class="icon-box">
-    <div class="text-box">
-      <div class="title-text">TIKTOK FEED</div>
-      <div class="desc-text">@noirdcheelsyie</div>
-    </div>
-    <span class="badge" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2);">FEED</span>
-  </a>
-
-  <p class="label-cat">// Encryption Request</p>
-
-  <!-- Card 3: WhatsApp Owner -->
-  <a href="https://wa.me/6285716366564" target="_blank" class="stack-card">
-    <img src="https://ar-hosting.pages.dev/1783634189496.jpg" class="icon-box">
-    <div class="text-box">
-      <div class="title-text">KANZA DIRECT TELEMETRY</div>
-      <div class="desc-text">Secure connection via WhatsApp</div>
-    </div>
-    <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">LIVE</span>
-  </a>
-
-  <!-- Footer -->
-  <div class="system-footer">
-    [ NODE_STATUS: ONLINE ] <br> © 2026 NOIR ABCD
+  <!-- Status Log -->
+  <div class="output-log">
+    <p>LAST LOGIN: <span class="accent-pink">FRI JUL 10 2026</span> ON GATEWAY</p>
+    <p>CORE_SYSTEM: INITIALIZED SUCCESSFUL</p>
+    <p style="color: #fff;">----------------------------------</p>
+    <div class="user-title">NOIR ABCD</div>
+    <p>STATUS: <span style="color: #fff; background: rgba(0,255,102,0.2); padding: 1px 6px; border-radius: 3px;">ONLINE</span></p>
   </div>
 
+  <!-- Blok Menu Perintah Eksekusi -->
+  <div class="cmd-list">
+    <!-- Community Hub -->
+    <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" class="cmd-line">
+      execute --join-community
+    </a>
+
+    <!-- Noir Bot (Baru) -->
+    <a href="https://wa.me/6289505801095" target="_blank" class="cmd-line" style="color: #3b82f6; border-color: rgba(59, 130, 246, 0.5);">
+      connect --noir-bot-system
+    </a>
+
+    <!-- TikTok -->
+    <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" class="cmd-line">
+      fetch --tiktok-stream
+    </a>
+
+    <!-- Contact Owner -->
+    <a href="https://wa.me/6285716366564" target="_blank" class="cmd-line" style="color: #ff0055; border-color: rgba(255, 0, 85, 0.4);">
+      call --owner-kanza
+    </a>
+  </div>
+
+  <!-- Input Simulasi Akhir -->
+  <div class="output-log" style="margin-top: 25px; margin-bottom: 0;">
+    <p>$ await next command...<span class="cursor">█</span></p>
+  </div>
+
+  <div class="footer">
+    [NODE_SHUTDOWN: NEVER]
+  </div>
 </div>
 
 </body>
