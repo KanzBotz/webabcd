@@ -1,236 +1,322 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>kanza@abcd:~</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 🚀 SEO GOOGLE OPTIMIZATION (TANYA JAWAB KEYWORD) -->
+    <title>Siapakah Kanza ABCD? — Noir Kanza Official Portfolio</title>
+    <meta name="description" content="Siapakah Kanza ABCD? Beliau adalah Kanza ABCD, seorang pengembang sistem bot WhatsApp, pencipta Bento Protocol, dan developer konsol terminal interaktif berbasis Node.js.">
+    <meta name="keywords" content="siapakah Kanza abcd, Kanza abcd, Kanza, Bento Protocol, Noir Bot, Kanza Vercel">
+    <meta name="author" content="Kanza ABCD">
+    <meta name="robots" content="index, follow">
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    <!-- Open Graph (Preview Tautan Sosial Media) -->
+    <meta property="og:title" content="Siapakah Kanza ABCD? — Official Terminal">
+    <meta property="og:description" content="Biodata dan portofolio resmi Kanza ABCD, Developer Bento Protocol & WhatsApp Bot System.">
+    <meta property="og:image" content="https://ar-hosting.pages.dev/1782343925119.jpg">
+    <meta property="og:url" content="https://kanzaabcd-two.vercel.app">
+    <meta property="og:type" content="website">
 
-body {
-  background: #0a0a0c;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  font-family: 'Fira Code', monospace;
-  color: #00ff66;
-}
+    <style>
+        :root {
+            --neon-green: #00ff66;
+            --dark-bg: #050505;
+            --terminal-glow: rgba(0, 255, 102, 0.15);
+            --neon-cyan: #00f0ff;
+        }
 
-/* Efek garis halus layar kaca CRT jadul */
-body::before {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 10;
-  background-size: 100% 4px, 3px 100%;
-  pointer-events: none;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: crosshair;
+        }
 
-/* Kotak Terminal dengan Animasi Glitch Getar Lembut */
-.terminal {
-  width: 100%;
-  max-width: 460px;
-  background: #0e0e12;
-  border: 2px solid #00ff66;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
-  position: relative;
-  overflow: hidden;
-  animation: terminalGlitch 12s infinite;
-}
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-@keyframes terminalGlitch {
-  0%, 93%, 100% { transform: translate(0, 0); }
-  94% { transform: translate(-2px, 1px); }
-  95% { transform: translate(2px, -1px); filter: hue-rotate(90deg); }
-  96% { transform: translate(-1px, -2px); }
-  97% { transform: translate(1px, 2px); filter: hue-rotate(0deg); }
-}
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.15;
+        }
 
-/* Top Bar Windows Terminal */
-.terminal-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(0, 255, 102, 0.3);
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-  font-size: 12px;
-  color: rgba(0, 255, 102, 0.6);
-}
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none;
+        }
 
-.dots { display: flex; gap: 6px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 255, 102, 0.3); }
+        .console-container {
+            width: 90%;
+            max-width: 750px;
+            height: 80vh;
+            background: rgba(10, 10, 10, 0.85);
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 25px var(--terminal-glow), inset 0 0 20px var(--terminal-glow);
+            border-radius: 6px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            backdrop-filter: blur(4px);
+        }
 
-/* Output Log System */
-.output-log {
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 25px;
-  color: rgba(0, 255, 102, 0.85);
-}
+        .console-header {
+            background: rgba(0, 255, 102, 0.1);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--neon-green);
+        }
 
-.accent-pink { color: #ff0055; }
+        .dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green); opacity: 0.5; }
 
-/* --- EFEK GLITCH PADA TEKS UTAMA --- */
-.user-title {
-  font-weight: 700;
-  font-size: 24px;
-  color: #fff;
-  margin-bottom: 4px;
-  position: relative;
-  display: inline-block;
-}
+        .title-glitch {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            animation: glitch 1.5s infinite;
+        }
 
-.user-title::before, .user-title::after {
-  content: "kanza ABCD";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: #0e0e12;
-}
+        .console-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.95rem;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
 
-.user-title::before {
-  color: #ff0055;
-  left: 2px;
-  text-shadow: -1px 0 #ff0055;
-  clip-path: inset(0 0 0 0);
-  animation: glitch-anim-1 3s infinite linear alternate-reverse;
-}
+        .line { line-height: 1.4; word-break: break-all; }
+        .system-prefix { color: var(--neon-cyan); }
 
-.user-title::after {
-  color: #00bfff;
-  left: -2px;
-  text-shadow: -1px 0 #00bfff;
-  clip-path: inset(0 0 0 0);
-  animation: glitch-anim-2 2s infinite linear alternate-reverse;
-}
+        .input-area {
+            display: flex;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(0, 255, 102, 0.3);
+            align-items: center;
+        }
 
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(40% 0 61% 0); }
-  20% { clip-path: inset(92% 0 1% 0); }
-  40% { clip-path: inset(15% 0 80% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(3% 0 92% 0); }
-  100% { clip-path: inset(64% 0 32% 0); }
-}
+        .prompt-symbol { margin-right: 10px; color: var(--neon-cyan); font-weight: bold; }
 
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(25% 0 58% 0); }
-  22% { clip-path: inset(14% 0 80% 0); }
-  49% { clip-path: inset(78% 0 12% 0); }
-  71% { clip-path: inset(32% 0 60% 0); }
-  90% { clip-path: inset(5% 0 91% 0); }
-  100% { clip-path: inset(88% 0 2% 0); }
-}
+        #cmd-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--neon-green);
+            font-family: inherit;
+            font-size: 1rem;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
 
-/* Menu Perintah */
-.cmd-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(5, 5, 5, 0.9);
+            flex-wrap: wrap;
+        }
 
-.cmd-line {
-  display: block;
-  text-decoration: none;
-  color: #00ff66;
-  border: 1px dashed rgba(0, 255, 102, 0.4);
-  padding: 14px 18px;
-  border-radius: 6px;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  position: relative;
-}
+        .btn-neon {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
 
-.cmd-line:hover, .cmd-line:active {
-  background: #00ff66;
-  color: #0e0e12;
-  font-weight: 700;
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
-  transform: translateX(4px);
-}
+        .btn-neon:hover {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-green);
+            font-weight: bold;
+        }
 
-.cmd-line::before {
-  content: "$ ";
-  color: rgba(0, 255, 102, 0.6);
-}
-.cmd-line:hover::before { color: #0e0e12; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 3px; }
 
-/* Kursor Berkedip */
-.cursor {
-  animation: blink 1s infinite;
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.footer {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 11px;
-  color: rgba(0, 255, 102, 0.4);
-}
-</style>
+        @keyframes glitch {
+            0% { text-shadow: 1px 0 0 red, -1px 0 0 blue; }
+            50% { text-shadow: -1px 0 0 red, 1px 0 0 cyan; }
+            100% { text-shadow: 1px 0 0 red, -1px 0 0 blue; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="terminal">
-  <!-- Top Bar -->
-  <div class="terminal-bar">
-    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-    <div>bash - kanza@abcd:~</div>
-    <div>v1.0.9</div>
-  </div>
+    <canvas id="matrix"></canvas>
+    <div class="scanlines"></div>
 
-  <!-- Status Log -->
-  <div class="output-log">
-    <p>LAST LOGIN: <span class="accent-pink">FRI JUL 10 2026</span> ON GATEWAY</p>
-    <p>CORE_SYSTEM: INITIALIZED SUCCESSFUL</p>
-    <p style="color: #fff;">----------------------------------</p>
-    <!-- Bagian teks dengan efek Glitch -->
-    <div class="user-title">kanza abcd</div>
-    <p>STATUS: <span style="color: #fff; background: rgba(0,255,102,0.2); padding: 1px 6px; border-radius: 3px;">ONLINE</span></p>
-  </div>
+    <div class="console-container">
+        <!-- Header -->
+        <div class="console-header">
+            <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="title-glitch">KANZA-ABCD // PROTOCOL-v1.0.9</div>
+            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: ACTIVE</div>
+        </div>
 
-  <!-- Menu Perintah -->
-  <div class="cmd-list">
-    <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" class="cmd-line">
-      execute --join-community
-    </a>
+        <!-- Terminal Output Screen -->
+        <div class="console-body" id="screen">
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Inisialisasi Bento-Protocol Core... Sukses.</div>
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Mengamankan node jaringan dari server Vercel Edge...</div>
+            
+            <!-- 📌 KONTEN TEKS KHUSUS MERAYAP DI GOOGLE -->
+            <div class="line" style="color: #666; font-size: 0.85rem;">[INDEX] Pertanyaan publik terkoneksi: <b>Siapakah Kanza ABCD?</b> Jawab: Beliau adalah Noir Kanza ABCD, arsitek utama di balik Bento Protocol Framework dan ekosistem Noir Bot.</div>
+            
+            <div class="line">Ketik <span style="color: #fff; font-weight: bold;">help</span> untuk daftar command atau gunakan jalan pintas tombol di bawah.</div>
+        </div>
 
-    <a href="https://wa.me/6289505801095" target="_blank" class="cmd-line" style="color: #3b82f6; border-color: rgba(59, 130, 246, 0.5);">
-      connect --noir-bot-system
-    </a>
+        <!-- Quick Access Neon Buttons -->
+        <div class="action-buttons">
+            <button class="btn-neon" onclick="executeQuick('owner')">.owner</button>
+            <button class="btn-neon" onclick="executeQuick('features')">.features</button>
+            <button class="btn-neon" onclick="executeQuick('contact')">.contact</button>
+            <button class="btn-neon" onclick="executeQuick('sosmed')">.sosmed</button>
+            <button class="btn-neon" onclick="executeQuick('Community')">.Community</button>
+            <button class="btn-neon" onclick="executeQuick('clear')">.clear</button>
+            <button class="btn-neon" onclick="playBeep()">.ping</button>
+        </div>
 
-    <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" class="cmd-line">
-      fetch --tiktok-stream
-    </a>
+        <!-- Input Box -->
+        <div class="input-area">
+            <span class="prompt-symbol">kanza@abcd:~$</span>
+            <input type="text" id="cmd-input" placeholder="Type a command..." autocomplete="off" autofocus>
+        </div>
+    </div>
 
-    <a href="https://wa.me/6285716366564" target="_blank" class="cmd-line" style="color: #ff0055; border-color: rgba(255, 0, 85, 0.4);">
-      call --owner-kanza
-    </a>
-  </div>
+    <script>
+        // Matrix Canvas Effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        const letters = "01010101ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
 
-  <div class="output-log" style="margin-top: 25px; margin-bottom: 0;">
-    <p>$ await next command...<span class="cursor">█</span></p>
-  </div>
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff66';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
 
-  <div class="footer">
-    [NODE_SHUTDOWN: NEVER]
-  </div>
-</div>
+        // Sound Engine (Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq = 600, duration = 0.08) {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
+        // Logic Terminal Interaktif
+        const input = document.getElementById('cmd-input');
+        const screen = document.getElementById('screen');
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const cmd = this.value.trim().toLowerCase();
+                if (cmd) {
+                    processCommand(cmd);
+                    this.value = '';
+                }
+            } else {
+                playBeep(300 + Math.random() * 200, 0.02);
+            }
+        });
+
+        function executeQuick(cmd) {
+            playBeep(800, 0.1);
+            processCommand(cmd);
+        }
+
+        function printLine(text, isSystem = false) {
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.innerHTML = isSystem ? `<span class="system-prefix">[SYS-RESP]</span> ${text}` : text;
+            screen.appendChild(line);
+            screen.scrollTop = screen.scrollHeight;
+        }
+
+        function processCommand(cmd) {
+            printLine(`<span style="color: var(--neon-cyan)">kanza@abcd:~$</span> ${cmd}`);
+            
+            setTimeout(() => {
+                switch(cmd) {
+                    case 'help':
+                        printLine('Perintah yang tersedia:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link Sosial Media Aktif<br>➔ <b>Community</b> - Tautan Komunitas / Grup<br>➔ <b>features</b> - Daftar Modul Utama Sistem<br>➔ <b>clear</b> - Bersihkan Layar Konsol', true);
+                        break;
+                    case 'owner':
+                        printLine('DEVELOPER IDENTITY ACCESS:<br>• Nama: Noir / Kanza ABCD<br>• Project: WhatsApp System Core Mod v1.0.9<br>• Status: Active Core Developer.', true);
+                        break;
+                    case 'contact':
+                        printLine('OFFICIAL CONTACT PROTOCOL:<br>• WhatsApp: <a href="https://wa.me/6285716366564" target="_blank" style="color: #fff; font-weight: bold; text-decoration: underline;">wa.me/6285716366564</a><br>• Jam Aktif: 24/7 System Monitor.', true);
+                        break;
+                    case 'sosmed':
+                        printLine('SOCIAL NETWORKING NODE:<br>• TikTok: <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" style="color: #fff; text-decoration: underline;">@noirdcheelsyie</a><br>• Instagram: <a href="https://www.instagram.com/alwaysnoir18?igsh=MXE5bzZwcDg0dXByYQ==" target="_blank" style="color: #fff; text-decoration: underline;">@alwaysnoir18</a>', true);
+                        break;
+                    case 'Community':
+                        printLine('COMMUNITY Community LINK:<br>• WhatsApp Group: <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" style="color: #00ff66; font-weight: bold; text-decoration: underline;">KLIK UNTUK GABUNG KOMUNITAS</a>', true);
+                        break;
+                    case 'features':
+                        printLine('ACTIVE MODULES:<br>┌ 🛠️ Baileys Connection Handler<br>├ 📥 Doroni Media Scraper Module<br>└ 🤖 Interactive Node Flow Engine', true);
+                        break;
+                    case 'clear':
+                        screen.innerHTML = '';
+                        break;
+                    default:
+                        printLine(`ERROR: Command "${cmd}" tidak dikenal. Ketik <b>help</b>.`, true);
+                        playBeep(200, 0.3);
+                }
+            }, 150);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
