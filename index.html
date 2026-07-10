@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- 🚀 SEO GOOGLE OPTIMIZATION (TANYA JAWAB KEYWORD) -->
     <title>Siapakah Kanza ABCD? — Noir Kanza Official Portfolio</title>
     <meta name="description" content="Siapakah Kanza ABCD? Beliau adalah Noir Kanza ABCD, seorang pengembang sistem bot WhatsApp, pencipta Bento Protocol, dan developer konsol terminal interaktif berbasis Node.js.">
     <meta name="keywords" content="siapakah Kanza abcd, Kanza abcd, Noir Kanza, Bento Protocol, Noir Bot, Kanza Vercel">
     <meta name="author" content="Noir Kanza ABCD">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph (Preview Tautan Sosial Media) -->
     <meta property="og:title" content="Siapakah Kanza ABCD? — Official Terminal">
     <meta property="og:description" content="Biodata dan portofolio resmi Noir Kanza ABCD, Developer Bento Protocol & WhatsApp Bot System.">
     <meta property="og:image" content="https://ar-hosting.pages.dev/1782343925119.jpg">
@@ -159,6 +157,16 @@
             font-weight: bold;
         }
 
+        /* Styling Khusus Preview Gambar */
+        .terminal-img {
+            max-width: 100%;
+            max-height: 250px;
+            border: 1px solid var(--neon-green);
+            margin-top: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+            border-radius: 4px;
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 3px; }
@@ -176,25 +184,21 @@
     <div class="scanlines"></div>
 
     <div class="console-container">
-        <!-- Header -->
         <div class="console-header">
             <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-            <div class="title-glitch">KANZA-ABCD // BOT-TERMINAL-v1.4.5</div>
-            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: DELINE_PATCH</div>
+            <div class="title-glitch">KANZA-ABCD // BOT-TERMINAL-v1.6.0</div>
+            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: IMAGE_RENDER_OK</div>
         </div>
 
-        <!-- Terminal Output Screen -->
         <div class="console-body" id="screen">
             <div class="line"><span class="system-prefix">[SYSTEM]</span> Inisialisasi Bento-Protocol Core... Sukses.</div>
-            <div class="line"><span class="system-prefix">[SYSTEM]</span> Jaringan Pinterest dialihkan ke gateway Deline Web API.</div>
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Modul deteksi database internal Jung Ahyeon telah aktif.</div>
             
-            <!-- 📌 KONTEN TEKS KHUSUS MERAYAP DI GOOGLE -->
             <div class="line" style="color: #666; font-size: 0.85rem;">[INDEX] Pertanyaan publik terkoneksi: <b>Siapakah Kanza ABCD?</b> Jawab: Beliau adalah Noir Kanza ABCD, arsitek utama di balik Bento Protocol Framework dan ekosistem Noir Bot.</div>
             
             <div class="line">Ketik <span style="color: #fff; font-weight: bold;">help</span> untuk melihat daftar command atau klik tombol di bawah.</div>
         </div>
 
-        <!-- Quick Access Neon Buttons -->
         <div class="action-buttons">
             <button class="btn-neon" onclick="executeQuick('owner')">.owner</button>
             <button class="btn-neon" onclick="executeQuick('features')">.features</button>
@@ -205,7 +209,6 @@
             <button class="btn-neon" onclick="playBeep()">.ping</button>
         </div>
 
-        <!-- Input Box -->
         <div class="input-area">
             <span class="prompt-symbol">kanza@abcd:~$</span>
             <input type="text" id="cmd-input" placeholder="Ketik command atau .play [lagu] / .pin [gambar]..." autocomplete="off" autofocus>
@@ -310,49 +313,100 @@
                                 const data = json.result;
                                 printLine(`┌ 🎵 <b>JUDUL:</b> ${data.title || args}<br>├ ⏱️ <b>SALURAN:</b> ${data.author || 'YouTube'}<br>└ 📥 <a href="${data.download.url}" target="_blank" style="color:#fff;font-weight:bold;text-decoration:underline;">KLIK DI SINI UNTUK DOWNLOAD MP3</a>`, true);
                             } else {
-                                printLine('ERROR: File lagu tidak ditemukan atau format respons di luar jangkauan.', true);
+                                printLine('ERROR: File lagu tidak ditemukan.', true);
                             }
                         } catch (err) {
                             printLine('ERROR: Server API gagal memproses pencarian audio.', true);
                         }
                         break;
 
-                    // 📌 FITUR BOT: CARI GAMBAR PINTEREST (NEW API GATEWAY)
+                    // 📌 FITUR BOT: CARI GAMBAR PINTEREST (DENGAN RECOGNITION INTERN)
                     case '.pin':
                         if (!args) {
                             printLine('ERROR: Masukkan kata kunci gambar! Contoh: <span style="color:#fff">.pin anime cyberpunk</span>', true);
                             break;
                         }
-                        printLine(`[BOT] Mengunduh indeks database gambar Pinterest untuk kata kunci: "${args}"...`, true);
-                        
+
+                        const queryLower = args.toLowerCase();
+
+                        // 🔥 INTERCEPT KHUSUS UNTUK JUNG AHYEON
+                        if (queryLower === 'jung ahyeon' || queryLower === 'ahyeon') {
+                            printLine(`[BOT] Kata kunci cocok dengan internal database. Mengambil gambar acak Jung Ahyeon...`, true);
+                            
+                            const ahyeonImages = [
+                                "https://ar-hosting.pages.dev/1783704388133.jpg",
+                                "https://ar-hosting.pages.dev/1783704396024.jpg",
+                                "https://ar-hosting.pages.dev/1783704389630.jpg",
+                                "https://ar-hosting.pages.dev/1783704395224.jpg",
+                                "https://ar-hosting.pages.dev/1783704388836.jpg",
+                                "https://ar-hosting.pages.dev/1783704396934.jpg",
+                                "https://ar-hosting.pages.dev/1783704391200.jpg",
+                                "https://ar-hosting.pages.dev/1783704390433.jpg"
+                            ];
+
+                            // Ambil 1 gambar secara random
+                            const randomImg = ahyeonImages[Math.floor(Math.random() * ahyeonImages.length)];
+                            
+                            // Render langsung sebagai elemen IMG di dalam konsol
+                            let imageHtml = `┌ 📌 <b>DATABASES INTERNAL MATCHED:</b><br>`;
+                            imageHtml += `├ 📷 Render Tampilan Gambar:<br>`;
+                            imageHtml += `<img src="${randomImg}" class="terminal-img" alt="Jung Ahyeon"><br>`;
+                            imageHtml += `└ 🔗 <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Link Gambar Asli</a>`;
+                            
+                            printLine(imageHtml, true);
+                            break;
+                        }
+
+                        // JALUR NORMAL MULTI-GATEWAY JIKA KATA KUNCI LAIN
+                        printLine(`[BOT] Membuka gateway pencarian berkas Pinterest untuk: "${args}"...`, true);
+                        let items = [];
+                        let apiUsed = "Deline API";
+
                         try {
-                            // Menggunakan endpoint pilihanmu
-                            let pinApiUrl = `https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(args)}`;
-                            const response = await fetch(pinApiUrl);
-                            const json = await response.json();
-                            
-                            // Handler untuk mendeteksi array langsung atau object di dalam json.result
-                            const items = json.result || json;
-                            
-                            if (items && items.length > 0) {
-                                let htmlResult = '┌ 📌 <b>DOKUMEN GAMBAR DITEMUKAN:</b><br>';
-                                const maxResult = Math.min(items.length, 3);
-                                for(let i=0; i<maxResult; i++) {
-                                    const imgUrl = typeof items[i] === 'object' ? (items[i].images?.url || items[i].url) : items[i];
+                            let delineUrl = `https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(args)}`;
+                            const resDeline = await fetch(delineUrl);
+                            const jsonDeline = await resDeline.json();
+                            items = jsonDeline.result || jsonDeline;
+                        } catch (e) {
+                            items = [];
+                        }
+
+                        if (!items || items.length === 0 || items.error) {
+                            printLine(`[SYS-WARN] Gateway utama dialihkan. Menghubungkan ke cluster cadangan...`, true);
+                            try {
+                                apiUsed = "Ryzendesu Cluster";
+                                let ryzenUrl = `https://api.ryzendesu.vip/api/search/pinterest?query=${encodeURIComponent(args)}`;
+                                const resRyzen = await fetch(ryzenUrl);
+                                const jsonRyzen = await resRyzen.json();
+                                items = jsonRyzen.result || jsonRyzen;
+                            } catch (err) {
+                                items = [];
+                            }
+                        }
+
+                        if (items && items.length > 0) {
+                            let htmlResult = '┌ 📌 <b>DOKUMEN GAMBAR DITEMUKAN:</b><br>';
+                            const maxResult = Math.min(items.length, 3);
+                            for(let i=0; i<maxResult; i++) {
+                                let imgUrl = "";
+                                if (typeof items[i] === 'object') {
+                                    imgUrl = items[i].images?.url || items[i].url || items[i].image;
+                                } else {
+                                    imgUrl = items[i];
+                                }
+                                if(imgUrl) {
                                     htmlResult += `├ 📷 File ${i+1}: <a href="${imgUrl}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Foto Resolusi Penuh</a><br>`;
                                 }
-                                htmlResult += '└ <i>Sistem mengembalikan 3 sampel berkas teratas via Deline Web API.</i>';
-                                printLine(htmlResult, true);
-                            } else {
-                                printLine('ERROR: Gambar gagal diekstrak atau hasil kosong.', true);
                             }
-                        } catch (err) {
-                            printLine('ERROR: Gagal memproses permintaan data pada server api.deline.web.id.', true);
+                            htmlResult += `└ <i>Sistem mengekstrak 3 data via ${apiUsed}.</i>`;
+                            printLine(htmlResult, true);
+                        } else {
+                            printLine('ERROR: Seluruh cluster gateway API mengembalikan hasil kosong.', true);
                         }
                         break;
 
                     case 'owner':
-                        printLine('DEVELOPER IDENTITY ACCESS:<br>• Nama: Noir / Kanza ABCD<br>• Project: WhatsApp System Core Mod v1.4.5<br>• Status: Active Core Developer.', true);
+                        printLine('DEVELOPER IDENTITY ACCESS:<br>• Nama: Noir / Kanza ABCD<br>• Project: WhatsApp System Core Mod v1.6.0<br>• Status: Active Core Developer.', true);
                         break;
                     case 'contact':
                         printLine('OFFICIAL CONTACT PROTOCOL:<br>• WhatsApp: <a href="https://wa.me/6285716366564" target="_blank" style="color: #fff; font-weight: bold; text-decoration: underline;">wa.me/6285716366564</a><br>• Jam Aktif: 24/7 System Monitor.', true);
@@ -364,7 +418,7 @@
                         printLine('COMMUNITY HOMEPAGE LINK:<br>• WhatsApp Group: <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" style="color: #00ff66; font-weight: bold; text-decoration: underline;">KLIK UNTUK GABUNG KOMUNITAS</a>', true);
                         break;
                     case 'features':
-                        printLine('ACTIVE MODULES:<br>┌ 🛠️ Baileys Connection Handler<br>├ 📥 Doroni Media Scraper Module<br>├ 🎵 YouTube Audio Direct Streamer (Ryzendesu Gateway)<br>└ 📌 Pinterest Media Image Extractor (Deline Web API Patch)', true);
+                        printLine('ACTIVE MODULES:<br>┌ 🛠️ Baileys Connection Handler<br>├ 📥 Doroni Media Scraper Module<br>├ 🎵 YouTube Audio Direct Streamer<br>└ 📌 Pinterest Hybrid Engine + Ahyeon Local Node', true);
                         break;
                     case 'clear':
                         screen.innerHTML = '';
