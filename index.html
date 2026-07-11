@@ -243,12 +243,12 @@
         <div class="console-header">
             <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="title-glitch">KANZA-ABCD // BOT-TERMINAL-v1.6.0</div>
-            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: SAFE_FALLBACK_ACTIVE</div>
+            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: IMAGE_RENDER_OK</div>
         </div>
 
         <div class="console-body" id="screen">
             <div class="line"><span class="system-prefix">[SYSTEM]</span> Inisialisasi Bento-Protocol Core... Sukses.</div>
-            <div class="line"><span class="system-prefix">[SYSTEM]</span> Modul pengamanan CORS & Fallback database aktif.</div>
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Modul deteksi database internal Jung Ahyeon telah aktif.</div>
             
             <div class="line" style="color: #666; font-size: 0.85rem;">[INDEX] Pertanyaan publik terkoneksi: <b>Siapakah Kanza ABCD?</b> Jawab: Beliau adalah Noir Kanza ABCD, arsitek utama di balik Bento Protocol Framework dan ekosistem Noir Bot.</div>
             
@@ -278,7 +278,7 @@
                 <button class="btn-neon" id="song-btn" onclick="downloadSong()">Download MP3</button>
             </div>
             <div class="dl-row">
-                <input type="text" id="pin-input" placeholder="📌 Kata kunci Pinterest, contoh: jung ahyeon / cyberpunk">
+                <input type="text" id="pin-input" placeholder="📌 Kata kunci Pinterest, contoh: anime cyberpunk">
                 <button class="btn-neon" id="pin-btn" onclick="searchPinterest()">Cari Gambar</button>
             </div>
             <div class="dl-status" id="dl-status"></div>
@@ -502,14 +502,6 @@
             screen.scrollTop = screen.scrollHeight;
         }
 
-        const fallbackImages = [
-            "https://ar-hosting.pages.dev/1783704388133.jpg",
-            "https://ar-hosting.pages.dev/1783704396024.jpg",
-            "https://ar-hosting.pages.dev/1783704389630.jpg",
-            "https://ar-hosting.pages.dev/1783704395224.jpg",
-            "https://ar-hosting.pages.dev/1783704388836.jpg"
-        ];
-
         async function processCommand(rawCmd) {
             const parts = rawCmd.split(' ');
             const cmd = parts[0].toLowerCase();
@@ -520,7 +512,7 @@
             setTimeout(async () => {
                 switch(cmd) {
                     case 'help':
-                        printLine('Perintah Utama Terminal:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link LinkedIn, TikTok & IG<br>➔ <b>homepage</b> - Tautan Komunitas / Grup<br>➔ <b>clear</b> - Bersihkan Layar<br><br>🔥 Fitur Scraper Bot Terintegrasi:<br>➔ <b>.play [judul lagu]</b> - Cari & Download Musik MP3<br>➔ <b>.pin [kata kunci]</b> - Cari Gambar Pinterest (dengan fallback aman)<br><br>⚔️ Fitur RPG:<br>➔ <b>.daftar</b> - Buat akun RPG baru<br>➔ <b>.login</b> - Masuk ke akun RPG<br>➔ <b>.logout</b> - Keluar dari akun RPG<br>➔ <b>.ubahpw</b> - Ganti password akun<br>➔ <b>.profile</b> - Lihat status karakter<br>➔ <b>.petualang</b> - Berpetualang untuk EXP & Gold', true);
+                        printLine('Perintah Utama Terminal:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link LinkedIn, TikTok & IG<br>➔ <b>homepage</b> - Tautan Komunitas / Grup<br>➔ <b>clear</b> - Bersihkan Layar<br><br>🔥 Fitur Scraper Bot Terintegrasi:<br>➔ <b>.play [judul lagu]</b> - Cari & Download Musik MP3<br>➔ <b>.pin [kata kunci]</b> - Cari Gambar dari Pinterest<br><br>⚔️ Fitur RPG:<br>➔ <b>.daftar</b> - Buat akun RPG baru<br>➔ <b>.login</b> - Masuk ke akun RPG<br>➔ <b>.logout</b> - Keluar dari akun RPG<br>➔ <b>.ubahpw</b> - Ganti password akun<br>➔ <b>.profile</b> - Lihat status karakter<br>➔ <b>.petualang</b> - Berpetualang untuk EXP & Gold<br>➔ <b>.backupdata</b> - [OWNER] Unduh backup data semua pemain', true);
                         break;
 
                     case '.daftar':
@@ -540,6 +532,26 @@
                         if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
                         startUbahpwFlow();
                         break;
+                    case '.backupdata': {
+                        if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
+                        printLine('[SYS] Memproses backup data pemain...', true);
+                        try {
+                            const res = await fetch('/api/rpg/backupdata', { headers: { 'X-Session-Token': rpgToken } });
+                            if (res.status === 403) { printLine('ERROR: ⛔ Akses ditolak.', true); break; }
+                            if (!res.ok) { printLine('ERROR: Gagal mengambil backup.', true); break; }
+                            const blob = await res.blob();
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'backup-players.json';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            printLine('[SYS] ✅ Backup berhasil diunduh.', true);
+                        } catch { printLine('ERROR: Gagal.', true); }
+                        break;
+                    }
                     case '.profile': {
                         if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
                         try {
@@ -559,7 +571,7 @@
                             const json = await res.json();
                             if (json && json.ok) {
                                 printLine(`⚔️ +${json.expGain} EXP, 💰 +${json.goldGain} Gold, 💔 -${json.damage} HP`, true);
-                            } else { printLine('ERROR: Gagal petualang.', true); }
+                            } else { printLine('ERROR: Gagal berpetualang.', true); }
                         } catch { printLine('ERROR: Server sibuk.', true); }
                         break;
                     }
@@ -568,39 +580,49 @@
                         if (!args) { printLine('ERROR: Masukkan judul lagu!', true); break; }
                         printLine(`[BOT] Mencari lagu: "${escapeHtml(args)}"...`, true);
                         try {
-                            const res = await fetch(`https://api.dhamzxploit.my.id/api/ytplay?query=${encodeURIComponent(args)}`);
+                            // DISINKRONKAN KE BACKEND LOCAL (/api/song?q=)
+                            const res = await fetch(`/api/song?q=${encodeURIComponent(args)}`);
                             const json = await res.json();
-                            if (json && json.status === true && json.result) {
-                                const d = json.result;
-                                printLine(`┌ 🎵 <b>${escapeHtml(d.title)}</b><br>└ <a href="${d.mp3}" target="_blank" style="color:#fff;text-decoration:underline;">KLIK DOWNLOAD MP3</a>`, true);
+                            if (json && json.ok) {
+                                const dlUrl = safeUrl(new URL(json.downloadUrl, window.location.origin).href);
+                                printLine(`┌ 🎵 <b>${escapeHtml(json.title)}</b><br>└ <a href="${dlUrl}" target="_blank" style="color:#fff;text-decoration:underline;">KLIK DOWNLOAD MP3</a>`, true);
                             } else { printLine('ERROR: Lagu tidak ditemukan.', true); }
                         } catch { printLine('ERROR: Gagal terhubung ke server lagu.', true); }
                         break;
 
                     case '.pin': {
                         if (!args) { printLine('ERROR: Masukkan kata kunci!', true); break; }
+                        
+                        // Internal fallback khusus Ahyeon tetap dipertahankan
+                        if (args.toLowerCase() === 'jung ahyeon' || args.toLowerCase() === 'ahyeon') {
+                            const ahyeonImages = [
+                                "https://ar-hosting.pages.dev/1783704388133.jpg",
+                                "https://ar-hosting.pages.dev/1783704396024.jpg",
+                                "https://ar-hosting.pages.dev/1783704389630.jpg",
+                                "https://ar-hosting.pages.dev/1783704395224.jpg",
+                                "https://ar-hosting.pages.dev/1783704388836.jpg"
+                            ];
+                            const randomImg = ahyeonImages[Math.floor(Math.random() * ahyeonImages.length)];
+                            printLine(`┌ 📌 <b>DATABASE INTERNAL:</b><br><img src="${randomImg}" class="terminal-img"><br>└ <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Link Gambar</a>`, true);
+                            break;
+                        }
+
                         printLine(`[BOT] Mencari gambar Pinterest: "${escapeHtml(args)}"...`, true);
                         try {
-                            const res = await fetch(`https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(args)}`);
+                            // DISINKRONKAN KE BACKEND LOCAL (/api/pinterest?q=)
+                            const res = await fetch(`/api/pinterest?q=${encodeURIComponent(args)}`);
                             const json = await res.json();
-                            const results = json.data || json.result || json;
-                            if (res.ok && Array.isArray(results) && results.length > 0) {
+                            if (json && json.ok && json.items && json.items.length > 0) {
                                 let html = '┌ 📌 <b>HASIL PINTEREST:</b><br>';
-                                results.slice(0, 3).forEach((u, i) => {
-                                    const imgUrl = typeof u === 'string' ? u : (u.image || u.url);
+                                json.items.slice(0, 3).forEach((item, i) => {
+                                    const imgUrl = safeUrl(item.image);
                                     if (imgUrl) {
                                         html += `[${i+1}] <a href="${imgUrl}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Foto</a><br>`;
                                     }
                                 });
                                 printLine(html + '└ Selesai.', true);
-                                break;
-                            }
-                            throw new Error('Format kosong');
-                        } catch {
-                            // Fallback otomatis jika API diblokir CORS/jaringan
-                            const randomImg = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-                            printLine(`┌ 📌 <b>FALLBACK MODE (CORS BYPASSED):</b><br><img src="${randomImg}" class="terminal-img" alt="Fallback"><br>└ <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Gambar Cadangan</a>`, true);
-                        }
+                            } else { printLine('ERROR: Gambar tidak ditemukan.', true); }
+                        } catch { printLine('ERROR: Gagal menghubungi server.', true); }
                         break;
                     }
 
@@ -639,12 +661,13 @@
             if (!q) { setStatus('Masukkan judul lagu.', true); return; }
             setStatus(`Mencari "${q}"...`);
             try {
-                const res = await fetch(`https://api.dhamzxploit.my.id/api/ytplay?query=${encodeURIComponent(q)}`);
+                const res = await fetch(`/api/song?q=${encodeURIComponent(q)}`);
                 const json = await res.json();
-                if (json && json.status === true && json.result) {
+                if (json && json.ok) {
                     setStatus('Berhasil ditemukan!');
-                    window.open(json.result.mp3, '_blank');
-                    printLine(`🎵 <a href="${json.result.mp3}" target="_blank" style="color:#fff;text-decoration:underline;">${json.result.title}</a>`, true);
+                    const dlUrl = safeUrl(new URL(json.downloadUrl, window.location.origin).href);
+                    window.open(dlUrl, '_blank');
+                    printLine(`🎵 <a href="${dlUrl}" target="_blank" style="color:#fff;text-decoration:underline;">${json.title}</a>`, true);
                 } else { setStatus('Lagu tidak ada.', true); }
             } catch { setStatus('Gagal terhubung server.', true); }
         }
@@ -654,27 +677,20 @@
             if (!q) { setStatus('Masukkan kata kunci.', true); return; }
             setStatus(`Mencari "${q}"...`);
             try {
-                const res = await fetch(`https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(q)}`);
+                const res = await fetch(`/api/pinterest?q=${encodeURIComponent(q)}`);
                 const json = await res.json();
-                const results = json.data || json.result || json;
-                if (res.ok && Array.isArray(results) && results.length > 0) {
+                if (json && json.ok && json.items && json.items.length > 0) {
                     setStatus('Gambar ditemukan.');
                     let html = '📌 <b>PINTEREST:</b><br>';
-                    results.slice(0, 3).forEach(u => {
-                        const imgUrl = typeof u === 'string' ? u : (u.image || u.url);
+                    json.items.slice(0, 3).forEach(item => {
+                        const imgUrl = safeUrl(item.image);
                         if (imgUrl) {
-                            html += `<img src="${safeUrl(imgUrl)}" class="terminal-img"><br>`;
+                            html += `<img src="${imgUrl}" class="terminal-img"><br>`;
                         }
                     });
                     printLine(html, true);
-                    return;
-                }
-                throw new Error('Gagal');
-            } catch {
-                const randomImg = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-                setStatus('Mode fallback aktif.');
-                printLine(`📌 <img src="${randomImg}" class="terminal-img">`, true);
-            }
+                } else { setStatus('Gambar tidak ada.', true); }
+            } catch { setStatus('Gagal terhubung server.', true); }
         }
     </script>
 </body>
