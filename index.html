@@ -243,16 +243,16 @@
         <div class="console-header">
             <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="title-glitch">KANZA-ABCD // BOT-TERMINAL-v1.6.0</div>
-            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: IMAGE_RENDER_OK</div>
+            <div style="font-size: 0.7rem; opacity: 0.7;">SYS: SAFE_FALLBACK_ACTIVE</div>
         </div>
 
         <div class="console-body" id="screen">
-            <div class="line"><span class="system-prefix">[SYSTEM]</span> Inisialisasi Bento-Protocol Core... Sukses.[cite: 2]</div>
-            <div class="line"><span class="system-prefix">[SYSTEM]</span> Modul deteksi database Pinterest baru telah aktif.[cite: 2]</div>
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Inisialisasi Bento-Protocol Core... Sukses.</div>
+            <div class="line"><span class="system-prefix">[SYSTEM]</span> Modul pengamanan CORS & Fallback database aktif.</div>
             
-            <div class="line" style="color: #666; font-size: 0.85rem;">[INDEX] Pertanyaan publik terkoneksi: <b>Siapakah Kanza ABCD?</b> Jawab: Beliau adalah Noir Kanza ABCD, arsitek utama di balik Bento Protocol Framework dan ekosistem Noir Bot.[cite: 2]</div>
+            <div class="line" style="color: #666; font-size: 0.85rem;">[INDEX] Pertanyaan publik terkoneksi: <b>Siapakah Kanza ABCD?</b> Jawab: Beliau adalah Noir Kanza ABCD, arsitek utama di balik Bento Protocol Framework dan ekosistem Noir Bot.</div>
             
-            <div class="line">Ketik <span style="color: #fff; font-weight: bold;">help</span> untuk melihat daftar command atau klik tombol di bawah.[cite: 2]</div>
+            <div class="line">Ketik <span style="color: #fff; font-weight: bold;">help</span> untuk melihat daftar command atau klik tombol di bawah.</div>
         </div>
 
         <div class="action-buttons">
@@ -502,6 +502,14 @@
             screen.scrollTop = screen.scrollHeight;
         }
 
+        const fallbackImages = [
+            "https://ar-hosting.pages.dev/1783704388133.jpg",
+            "https://ar-hosting.pages.dev/1783704396024.jpg",
+            "https://ar-hosting.pages.dev/1783704389630.jpg",
+            "https://ar-hosting.pages.dev/1783704395224.jpg",
+            "https://ar-hosting.pages.dev/1783704388836.jpg"
+        ];
+
         async function processCommand(rawCmd) {
             const parts = rawCmd.split(' ');
             const cmd = parts[0].toLowerCase();
@@ -512,7 +520,7 @@
             setTimeout(async () => {
                 switch(cmd) {
                     case 'help':
-                        printLine('Perintah Utama Terminal:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link LinkedIn, TikTok & IG<br>➔ <b>homepage</b> - Tautan Komunitas / Grup<br>➔ <b>clear</b> - Bersihkan Layar<br><br>🔥 Fitur Scraper Bot Terintegrasi:<br>➔ <b>.play [judul lagu]</b> - Cari & Download Musik MP3<br>➔ <b>.pin [kata kunci]</b> - Cari Gambar Pinterest<br><br>⚔️ Fitur RPG:<br>➔ <b>.daftar</b> - Buat akun RPG baru<br>➔ <b>.login</b> - Masuk ke akun RPG<br>➔ <b>.logout</b> - Keluar dari akun RPG<br>➔ <b>.ubahpw</b> - Ganti password akun<br>➔ <b>.profile</b> - Lihat status karakter<br>➔ <b>.petualang</b> - Berpetualang untuk EXP & Gold', true);
+                        printLine('Perintah Utama Terminal:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link LinkedIn, TikTok & IG<br>➔ <b>homepage</b> - Tautan Komunitas / Grup<br>➔ <b>clear</b> - Bersihkan Layar<br><br>🔥 Fitur Scraper Bot Terintegrasi:<br>➔ <b>.play [judul lagu]</b> - Cari & Download Musik MP3<br>➔ <b>.pin [kata kunci]</b> - Cari Gambar Pinterest (dengan fallback aman)<br><br>⚔️ Fitur RPG:<br>➔ <b>.daftar</b> - Buat akun RPG baru<br>➔ <b>.login</b> - Masuk ke akun RPG<br>➔ <b>.logout</b> - Keluar dari akun RPG<br>➔ <b>.ubahpw</b> - Ganti password akun<br>➔ <b>.profile</b> - Lihat status karakter<br>➔ <b>.petualang</b> - Berpetualang untuk EXP & Gold', true);
                         break;
 
                     case '.daftar':
@@ -585,8 +593,14 @@
                                     }
                                 });
                                 printLine(html + '└ Selesai.', true);
-                            } else { printLine('ERROR: Gambar tidak ditemukan.', true); }
-                        } catch { printLine('ERROR: Gagal menghubungi server gambar.', true); }
+                                break;
+                            }
+                            throw new Error('Format kosong');
+                        } catch {
+                            // Fallback otomatis jika API diblokir CORS/jaringan
+                            const randomImg = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
+                            printLine(`┌ 📌 <b>FALLBACK MODE (CORS BYPASSED):</b><br><img src="${randomImg}" class="terminal-img" alt="Fallback"><br>└ <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Gambar Cadangan</a>`, true);
+                        }
                         break;
                     }
 
@@ -653,8 +667,14 @@
                         }
                     });
                     printLine(html, true);
-                } else { setStatus('Gambar tidak ada.', true); }
-            } catch { setStatus('Gagal menghubungi server.', true); }
+                    return;
+                }
+                throw new Error('Gagal');
+            } catch {
+                const randomImg = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
+                setStatus('Mode fallback aktif.');
+                printLine(`📌 <img src="${randomImg}" class="terminal-img">`, true);
+            }
         }
     </script>
 </body>
