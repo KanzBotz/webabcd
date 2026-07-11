@@ -136,9 +136,6 @@ app.get("/api/song/download", async (req, res) => {
   }, DOWNLOAD_TIMEOUT_MS);
 
   res.on("close", () => {
-    // Only abort if the response didn't finish normally (i.e. client disconnected
-    // before we finished sending). res.writableFinished is true once the stream
-    // completed successfully, so we suppress the cancel in that case.
     if (!settled && !res.writableFinished) fail("Klien memutuskan koneksi");
   });
 
@@ -196,25 +193,29 @@ app.get("/api/song/download", async (req, res) => {
   });
 });
 
-// --- Pinterest search ---
+// --- Pinterest search (Fixed query parameter & response parser) ---
 app.get("/api/pinterest", async (req, res) => {
   const q = (req.query.q || "").toString().trim();
   if (!q) return res.status(400).json({ ok: false, error: "Parameter q wajib diisi" });
 
   try {
-    const response = await fetch(`https://api.deline.web.id/search/pinterest?q=${encodeURIComponent(q)}`);
+    // Diperbarui menggunakan parameter query=? agar cocok dengan api.deline.web.id
+    const response = await fetch(`https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(q)}`);
     const json = await response.json();
 
-    if (!json || json.status === false || !Array.isArray(json.data)) {
+    // Toleransi berbagai struktur respons dari API eksternal
+    const rawData = json.data || json.result || (Array.isArray(json) ? json : null);
+
+    if (!json || json.status === false || !Array.isArray(rawData) || rawData.length === 0) {
       return res.status(404).json({ ok: false, error: "Gambar tidak ditemukan" });
     }
 
-    // Deduplicate by image URL, then shuffle so repeated searches don't
-    // always surface the exact same top results.
+    // Deduplicate by image URL/field, then shuffle
     const seen = new Set();
-    const unique = json.data.filter((item) => {
-      if (!item.image || seen.has(item.image)) return false;
-      seen.add(item.image);
+    const unique = rawData.filter((item) => {
+      const imgUrl = typeof item === 'string' ? item : (item.image || item.url);
+      if (!imgUrl || seen.has(imgUrl)) return false;
+      seen.add(imgUrl);
       return true;
     });
 
@@ -223,11 +224,16 @@ app.get("/api/pinterest", async (req, res) => {
       [unique[i], unique[j]] = [unique[j], unique[i]];
     }
 
-    const items = unique.slice(0, 12).map((item) => ({
-      image: item.image,
-      caption: item.caption || "",
-      source: item.source || "",
-    }));
+    const items = unique.slice(0, 12).map((item) => {
+      if (typeof item === 'string') {
+        return { image: item, caption: "", source: "" };
+      }
+      return {
+        image: item.image || item.url || "",
+        caption: item.caption || item.title || "",
+        source: item.source || "",
+      };
+    });
 
     res.json({ ok: true, items });
   } catch (err) {
