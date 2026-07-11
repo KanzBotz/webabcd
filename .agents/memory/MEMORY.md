@@ -1,0 +1,1 @@
+- [YouTube audio download reliability](youtube-audio-download.md) — nix-packaged yt-dlp is often too old for current YouTube; use a freshly downloaded static binary instead.
