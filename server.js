@@ -1,10 +1,9 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 const fetch = require("node-fetch");
 const yts = require("yt-search");
-const { spawn } = require("child_process");
+const ytdl = require("@distube/ytdl-core");
 const rpg = require("./rpg");
 
 const app = express();
@@ -82,140 +81,53 @@ app.get("/api/song", async (req, res) => {
 });
 
 const VIDEO_ID_RE = /^[a-zA-Z0-9_-]{11}$/;
-const DOWNLOAD_TIMEOUT_MS = 60_000;
-const MAX_CONCURRENT_DOWNLOADS = 4;
-let activeDownloads = 0;
 
+// Uses @distube/ytdl-core — pure JS, no CLI tools required, works on serverless (Vercel etc.)
+// Redirects the browser to YouTube's signed audio CDN URL (audioonly, highest quality).
 app.get("/api/song/download", async (req, res) => {
   const id = (req.query.id || "").toString().trim();
   if (!id || !VIDEO_ID_RE.test(id)) {
     return res.status(400).json({ ok: false, error: "ID video tidak valid" });
   }
 
-  if (activeDownloads >= MAX_CONCURRENT_DOWNLOADS) {
-    return res.status(429).json({ ok: false, error: "Server sedang sibuk, coba lagi sebentar lagi" });
+  try {
+    const info = await ytdl.getInfo(`https://www.youtube.com/watch?v=${id}`);
+    const format = ytdl.chooseFormat(info.formats, {
+      quality: "highestaudio",
+      filter: "audioonly",
+    });
+
+    if (!format || !format.url) {
+      return res.status(500).json({ ok: false, error: "Format audio tidak ditemukan" });
+    }
+
+    // Redirect browser directly to YouTube's audio CDN — no binary streaming needed
+    return res.redirect(302, format.url);
+  } catch (err) {
+    console.error("ytdl error:", err.message);
+    return res.status(500).json({ ok: false, error: "Gagal mendapatkan URL audio dari YouTube" });
   }
-  activeDownloads++;
-  let slotReleased = false;
-  const releaseSlot = () => {
-    if (!slotReleased) { slotReleased = true; activeDownloads--; }
-  };
-
-  const filename = `audio-${id}.mp3`;
-  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-  res.setHeader("Content-Type", "audio/mpeg");
-
-  const ytdlpBin = path.join(__dirname, ".bin", "yt-dlp");
-  const tmpBase = path.join(os.tmpdir(), `song-${id}-${Date.now()}`);
-  const rawPath = `${tmpBase}.audio`;
-  const mp3Path = `${tmpBase}.mp3`;
-
-  const children = new Set();
-  let settled = false;
-
-  const cleanup = () => {
-    fs.unlink(rawPath, () => {});
-    fs.unlink(mp3Path, () => {});
-    for (const child of children) {
-      if (!child.killed) child.kill("SIGKILL");
-    }
-    clearTimeout(timeoutTimer);
-    releaseSlot();
-  };
-
-  const fail = (msg, status = 500) => {
-    if (settled) return;
-    settled = true;
-    if (!res.headersSent) res.status(status).json({ ok: false, error: msg });
-    else res.destroy();
-    cleanup();
-  };
-
-  const timeoutTimer = setTimeout(() => {
-    fail("Proses unduh memakan waktu terlalu lama", 504);
-  }, DOWNLOAD_TIMEOUT_MS);
-
-  res.on("close", () => {
-    if (!settled && !res.writableFinished) fail("Klien memutuskan koneksi");
-  });
-
-  const ytdlp = spawn(ytdlpBin, [
-    "-f", "bestaudio",
-    "-o", rawPath,
-    `https://www.youtube.com/watch?v=${id}`,
-  ]);
-  children.add(ytdlp);
-
-  let ytdlpStderr = "";
-  ytdlp.stderr.on("data", (d) => { ytdlpStderr += d.toString(); });
-
-  ytdlp.on("error", (err) => {
-    console.error("yt-dlp spawn error:", err.message);
-    fail("Gagal menjalankan proses unduh");
-  });
-
-  ytdlp.on("close", (code) => {
-    if (settled) return;
-    if (code !== 0 || !fs.existsSync(rawPath)) {
-      console.error("yt-dlp failed:", ytdlpStderr.slice(-500));
-      return fail("Gagal mengunduh audio dari YouTube");
-    }
-
-    const ffmpeg = spawn("ffmpeg", [
-      "-y", "-i", rawPath,
-      "-vn", "-ar", "44100", "-ac", "2", "-b:a", "128k",
-      mp3Path,
-    ]);
-    children.add(ffmpeg);
-
-    let ffmpegStderr = "";
-    ffmpeg.stderr.on("data", (d) => { ffmpegStderr += d.toString(); });
-
-    ffmpeg.on("error", (err) => {
-      console.error("ffmpeg spawn error:", err.message);
-      fail("Gagal mengonversi audio");
-    });
-
-    ffmpeg.on("close", (code2) => {
-      if (settled) return;
-      if (code2 !== 0 || !fs.existsSync(mp3Path)) {
-        console.error("ffmpeg failed:", ffmpegStderr.slice(-500));
-        return fail("Gagal mengonversi audio");
-      }
-
-      settled = true;
-      clearTimeout(timeoutTimer);
-      const readStream = fs.createReadStream(mp3Path);
-      readStream.pipe(res);
-      readStream.on("close", cleanup);
-      readStream.on("error", () => { fail("Gagal mengirim audio"); });
-    });
-  });
 });
 
-// --- Pinterest search (Fixed query parameter & response parser) ---
+// --- Pinterest search ---
 app.get("/api/pinterest", async (req, res) => {
   const q = (req.query.q || "").toString().trim();
   if (!q) return res.status(400).json({ ok: false, error: "Parameter q wajib diisi" });
 
   try {
-    // Diperbarui menggunakan parameter query=? agar cocok dengan api.deline.web.id
-    const response = await fetch(`https://api.deline.web.id/search/pinterest?query=${encodeURIComponent(q)}`);
+    const response = await fetch(`https://api.deline.web.id/search/pinterest?q=${encodeURIComponent(q)}`);
     const json = await response.json();
 
-    // Toleransi berbagai struktur respons dari API eksternal
-    const rawData = json.data || json.result || (Array.isArray(json) ? json : null);
-
-    if (!json || json.status === false || !Array.isArray(rawData) || rawData.length === 0) {
+    if (!json || json.status === false || !Array.isArray(json.data)) {
       return res.status(404).json({ ok: false, error: "Gambar tidak ditemukan" });
     }
 
-    // Deduplicate by image URL/field, then shuffle
+    // Deduplicate by image URL, then shuffle so repeated searches don't
+    // always surface the exact same top results.
     const seen = new Set();
-    const unique = rawData.filter((item) => {
-      const imgUrl = typeof item === 'string' ? item : (item.image || item.url);
-      if (!imgUrl || seen.has(imgUrl)) return false;
-      seen.add(imgUrl);
+    const unique = json.data.filter((item) => {
+      if (!item.image || seen.has(item.image)) return false;
+      seen.add(item.image);
       return true;
     });
 
@@ -224,16 +136,11 @@ app.get("/api/pinterest", async (req, res) => {
       [unique[i], unique[j]] = [unique[j], unique[i]];
     }
 
-    const items = unique.slice(0, 12).map((item) => {
-      if (typeof item === 'string') {
-        return { image: item, caption: "", source: "" };
-      }
-      return {
-        image: item.image || item.url || "",
-        caption: item.caption || item.title || "",
-        source: item.source || "",
-      };
-    });
+    const items = unique.slice(0, 12).map((item) => ({
+      image: item.image,
+      caption: item.caption || "",
+      source: item.source || "",
+    }));
 
     res.json({ ok: true, items });
   } catch (err) {
@@ -246,6 +153,12 @@ app.get("/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only start a local listener when run directly (e.g. `node server.js`).
+// On Vercel, the file is imported as a serverless handler — app.listen must NOT be called.
+if (require.main === module) {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
