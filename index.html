@@ -181,6 +181,7 @@
             font-weight: bold;
         }
 
+        /* Styling Khusus Preview Gambar */
         .terminal-img {
             max-width: 100%;
             max-height: 250px;
@@ -286,6 +287,7 @@
     </div>
 
     <script>
+        // Matrix Canvas Effect
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.height = window.innerHeight;
@@ -309,6 +311,7 @@
         }
         setInterval(drawMatrix, 33);
 
+        // Sound Engine (Web Audio API)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(freq = 600, duration = 0.08) {
             const osc = audioCtx.createOscillator();
@@ -322,11 +325,13 @@
             osc.stop(audioCtx.currentTime + duration);
         }
 
+        // Logic Terminal Interaktif
         const input = document.getElementById('cmd-input');
         const screen = document.getElementById('screen');
 
+        // --- RPG session state ---
         let rpgToken = localStorage.getItem('rpgToken') || null;
-        let pendingAuth = null; 
+        let pendingAuth = null; // { type: 'daftar'|'login', step: 'email'|'password', email }
 
         function setRpgToken(token) {
             rpgToken = token;
@@ -336,6 +341,7 @@
             if (logoutBtn) logoutBtn.style.display = token ? 'inline-block' : 'none';
         }
 
+        // Sync logout button on page load
         (function() {
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) logoutBtn.style.display = rpgToken ? 'inline-block' : 'none';
@@ -363,7 +369,9 @@
             pendingAuth = { type, step: 'email', email: '' };
             input.type = 'text';
             input.placeholder = type === 'daftar' ? 'daftar akun @gmail:' : 'login akun @gmail:';
-            printLine(type === 'daftar' ? 'daftar akun @gmail:' : 'login akun @gmail:', true);
+            printLine(type === 'daftar'
+                ? 'daftar akun @gmail:'
+                : 'login akun @gmail:', true);
         }
 
         function startUbahpwFlow() {
@@ -384,6 +392,7 @@
                 return;
             }
 
+            // --- Ubah Password flow ---
             if (pendingAuth.type === 'ubahpw') {
                 if (pendingAuth.step === 'oldpw') {
                     printLine('masukkan password lama: ' + '•'.repeat(value.length));
@@ -515,183 +524,317 @@
                         printLine('Perintah Utama Terminal:<br>➔ <b>owner</b> - Detail Kontak Developer<br>➔ <b>contact</b> - Kontak WhatsApp Fast-Response<br>➔ <b>sosmed</b> - Link LinkedIn, TikTok & IG<br>➔ <b>homepage</b> - Tautan Komunitas / Grup<br>➔ <b>clear</b> - Bersihkan Layar<br><br>🔥 Fitur Scraper Bot Terintegrasi:<br>➔ <b>.play [judul lagu]</b> - Cari & Download Musik MP3<br>➔ <b>.pin [kata kunci]</b> - Cari Gambar dari Pinterest<br><br>⚔️ Fitur RPG:<br>➔ <b>.daftar</b> - Buat akun RPG baru<br>➔ <b>.login</b> - Masuk ke akun RPG<br>➔ <b>.logout</b> - Keluar dari akun RPG<br>➔ <b>.ubahpw</b> - Ganti password akun<br>➔ <b>.profile</b> - Lihat status karakter<br>➔ <b>.petualang</b> - Berpetualang untuk EXP & Gold<br>➔ <b>.backupdata</b> - [OWNER] Unduh backup data semua pemain', true);
                         break;
 
+                    // ⚔️ FITUR RPG: DAFTAR / LOGIN / PROFILE / PETUALANG
                     case '.daftar':
-                        if (rpgToken) { printLine('[SYS] Kamu sudah login.', true); break; }
+                        if (rpgToken) {
+                            printLine('[SYS] Kamu sudah login. Ketik <b>.profile</b> untuk melihat status karaktermu.', true);
+                            break;
+                        }
                         startAuthFlow('daftar');
                         break;
+
                     case '.login':
-                        if (rpgToken) { printLine('[SYS] Kamu sudah login.', true); break; }
+                        if (rpgToken) {
+                            printLine('[SYS] Kamu sudah login. Ketik <b>.profile</b> untuk melihat status karaktermu.', true);
+                            break;
+                        }
                         startAuthFlow('login');
                         break;
+
                     case '.logout':
-                        if (!rpgToken) { printLine('[SYS] Kamu belum login.', true); break; }
+                        if (!rpgToken) {
+                            printLine('[SYS] Kamu belum login.', true);
+                            break;
+                        }
                         setRpgToken(null);
                         printLine('[SYS] Berhasil logout.', true);
                         break;
+
                     case '.ubahpw':
-                        if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
+                        if (!rpgToken) {
+                            printLine('ERROR: Kamu belum login. Ketik <b>.login</b> dulu.', true);
+                            break;
+                        }
                         startUbahpwFlow();
                         break;
+
                     case '.backupdata': {
-                        if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
+                        if (!rpgToken) {
+                            printLine('ERROR: Kamu belum login.', true);
+                            break;
+                        }
                         printLine('[SYS] Memproses backup data pemain...', true);
                         try {
-                            const res = await fetch('/api/rpg/backupdata', { headers: { 'X-Session-Token': rpgToken } });
-                            if (res.status === 403) { printLine('ERROR: ⛔ Akses ditolak.', true); break; }
-                            if (!res.ok) { printLine('ERROR: Gagal mengambil backup.', true); break; }
+                            const res = await fetch('/api/rpg/backupdata', {
+                                headers: { 'X-Session-Token': rpgToken },
+                            });
+                            if (res.status === 403) {
+                                printLine('ERROR: ⛔ Akses ditolak. Fitur ini hanya untuk owner.', true);
+                                break;
+                            }
+                            if (!res.ok) {
+                                const json = await res.json();
+                                printLine(`ERROR: ${escapeHtml(json.error) || 'Gagal mengambil backup.'}`, true);
+                                break;
+                            }
                             const blob = await res.blob();
+                            const disposition = res.headers.get('Content-Disposition') || '';
+                            const nameMatch = disposition.match(/filename="([^"]+)"/);
+                            const filename = nameMatch ? nameMatch[1] : 'backup-players.json';
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = 'backup-players.json';
+                            a.download = filename;
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
                             URL.revokeObjectURL(url);
-                            printLine('[SYS] ✅ Backup berhasil diunduh.', true);
-                        } catch { printLine('ERROR: Gagal.', true); }
+                            printLine(`[SYS] ✅ Backup berhasil diunduh: <b>${escapeHtml(filename)}</b>`, true);
+                        } catch (err) {
+                            printLine('ERROR: Server tidak dapat dihubungi.', true);
+                        }
                         break;
                     }
+
                     case '.profile': {
-                        if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
+                        if (!rpgToken) {
+                            printLine('ERROR: Kamu belum login. Ketik <b>.daftar</b> atau <b>.login</b> dulu.', true);
+                            break;
+                        }
                         try {
                             const res = await fetch('/api/rpg/profile', { headers: { 'X-Session-Token': rpgToken } });
                             const json = await res.json();
                             if (json && json.ok) {
                                 const p = json.player;
-                                printLine(`┌ 👤 <b>${escapeHtml(p.email)}</b><br>├ Level: ${p.level}<br>├ HP: ${p.hp}/${p.maxHp}<br>└ Gold: ${p.gold}`, true);
-                            } else { setRpgToken(null); printLine('ERROR: Sesi tidak valid.', true); }
-                        } catch { printLine('ERROR: Gagal memuat profil.', true); }
+                                printLine(`┌ 👤 <b>${escapeHtml(p.email)}</b><br>├ 🎚️ Level: ${p.level} (EXP: ${p.exp}/${p.expToNext})<br>├ ❤️ HP: ${p.hp}/${p.maxHp}<br>└ 💰 Gold: ${p.gold}`, true);
+                            } else {
+                                setRpgToken(null);
+                                printLine(`ERROR: ${escapeHtml(json.error) || 'Sesi tidak valid.'}`, true);
+                            }
+                        } catch (err) {
+                            printLine('ERROR: Server RPG tidak dapat dihubungi.', true);
+                        }
                         break;
                     }
+
                     case '.petualang': {
-                        if (!rpgToken) { printLine('ERROR: Kamu belum login.', true); break; }
+                        if (!rpgToken) {
+                            printLine('ERROR: Kamu belum login. Ketik <b>.daftar</b> atau <b>.login</b> dulu.', true);
+                            break;
+                        }
+                        printLine('[SYS] Berangkat berpetualang...', true);
                         try {
                             const res = await fetch('/api/rpg/adventure', { method: 'POST', headers: { 'X-Session-Token': rpgToken } });
                             const json = await res.json();
                             if (json && json.ok) {
-                                printLine(`⚔️ +${json.expGain} EXP, 💰 +${json.goldGain} Gold, 💔 -${json.damage} HP`, true);
-                            } else { printLine('ERROR: Gagal berpetualang.', true); }
-                        } catch { printLine('ERROR: Server sibuk.', true); }
+                                const p = json.player;
+                                let msg = `┌ ⚔️ Petualangan selesai!<br>├ ✨ +${json.expGain} EXP, 💰 +${json.goldGain} Gold, 💔 -${json.damage} HP`;
+                                if (json.leveledUp) msg += `<br>├ 🎉 <b>NAIK LEVEL!</b> Sekarang Level ${p.level}`;
+                                msg += `<br>└ Status: Level ${p.level} | HP ${p.hp}/${p.maxHp} | Gold ${p.gold}`;
+                                printLine(msg, true);
+                            } else {
+                                printLine(`ERROR: ${escapeHtml(json.error) || 'Gagal berpetualang.'}`, true);
+                            }
+                        } catch (err) {
+                            printLine('ERROR: Server RPG tidak dapat dihubungi.', true);
+                        }
                         break;
                     }
 
+                    // 🎵 FITUR BOT: CARI LAGU
                     case '.play':
-                        if (!args) { printLine('ERROR: Masukkan judul lagu!', true); break; }
-                        printLine(`[BOT] Mencari lagu: "${escapeHtml(args)}"...`, true);
+                        if (!args) {
+                            printLine('ERROR: Masukkan judul lagunya! Contoh: <span style="color:#fff">.play blue bird</span>', true);
+                            break;
+                        }
+                        printLine(`[BOT] Menghubungkan jaringan, mencari data lagu: "${escapeHtml(args)}"...`, true);
+                        
                         try {
-                            // DISINKRONKAN KE BACKEND LOCAL (/api/song?q=)
-                            const res = await fetch(`/api/song?q=${encodeURIComponent(args)}`);
-                            const json = await res.json();
+                            const response = await fetch(`/api/song?q=${encodeURIComponent(args)}`);
+                            const json = await response.json();
+                            
                             if (json && json.ok) {
                                 const dlUrl = safeUrl(new URL(json.downloadUrl, window.location.origin).href);
-                                printLine(`┌ 🎵 <b>${escapeHtml(json.title)}</b><br>└ <a href="${dlUrl}" target="_blank" style="color:#fff;text-decoration:underline;">KLIK DOWNLOAD MP3</a>`, true);
-                            } else { printLine('ERROR: Lagu tidak ditemukan.', true); }
-                        } catch { printLine('ERROR: Gagal terhubung ke server lagu.', true); }
+                                printLine(`┌ 🎵 <b>JUDUL:</b> ${escapeHtml(json.title)}<br>├ ⏱️ <b>SALURAN:</b> ${escapeHtml(json.author)} (${escapeHtml(json.duration)})<br>└ 📥 <a href="${dlUrl}" target="_blank" style="color:#fff;font-weight:bold;text-decoration:underline;">KLIK DI SINI UNTUK DOWNLOAD MP3</a>`, true);
+                            } else {
+                                printLine(`ERROR: ${escapeHtml(json.error) || 'File lagu tidak ditemukan.'}`, true);
+                            }
+                        } catch (err) {
+                            printLine('ERROR: Server API gagal memproses pencarian audio.', true);
+                        }
                         break;
 
-                    case '.pin': {
-                        if (!args) { printLine('ERROR: Masukkan kata kunci!', true); break; }
-                        
-                        // Internal fallback khusus Ahyeon tetap dipertahankan
-                        if (args.toLowerCase() === 'jung ahyeon' || args.toLowerCase() === 'ahyeon') {
+                    // 📌 FITUR BOT: CARI GAMBAR PINTEREST (DENGAN RECOGNITION INTERN)
+                    case '.pin':
+                        if (!args) {
+                            printLine('ERROR: Masukkan kata kunci gambar! Contoh: <span style="color:#fff">.pin anime cyberpunk</span>', true);
+                            break;
+                        }
+
+                        const queryLower = args.toLowerCase();
+
+                        // 🔥 INTERCEPT KHUSUS UNTUK JUNG AHYEON
+                        if (queryLower === 'jung ahyeon' || queryLower === 'ahyeon') {
+                            printLine(`[BOT] Kata kunci cocok dengan internal database. Mengambil gambar acak Jung Ahyeon...`, true);
+                        // (images below are from a fixed hardcoded list, safe to inline)
+                            
                             const ahyeonImages = [
                                 "https://ar-hosting.pages.dev/1783704388133.jpg",
                                 "https://ar-hosting.pages.dev/1783704396024.jpg",
                                 "https://ar-hosting.pages.dev/1783704389630.jpg",
                                 "https://ar-hosting.pages.dev/1783704395224.jpg",
-                                "https://ar-hosting.pages.dev/1783704388836.jpg"
+                                "https://ar-hosting.pages.dev/1783704388836.jpg",
+                                "https://ar-hosting.pages.dev/1783704396934.jpg",
+                                "https://ar-hosting.pages.dev/1783704391200.jpg",
+                                "https://ar-hosting.pages.dev/1783704390433.jpg"
                             ];
+
+                            // Ambil 1 gambar secara random
                             const randomImg = ahyeonImages[Math.floor(Math.random() * ahyeonImages.length)];
-                            printLine(`┌ 📌 <b>DATABASE INTERNAL:</b><br><img src="${randomImg}" class="terminal-img"><br>└ <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Link Gambar</a>`, true);
+                            
+                            // Render langsung sebagai elemen IMG di dalam konsol
+                            let imageHtml = `┌ 📌 <b>DATABASES INTERNAL MATCHED:</b><br>`;
+                            imageHtml += `├ 📷 Render Tampilan Gambar:<br>`;
+                            imageHtml += `<img src="${randomImg}" class="terminal-img" alt="Jung Ahyeon"><br>`;
+                            imageHtml += `└ 🔗 <a href="${randomImg}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Link Gambar Asli</a>`;
+                            
+                            printLine(imageHtml, true);
                             break;
                         }
 
-                        printLine(`[BOT] Mencari gambar Pinterest: "${escapeHtml(args)}"...`, true);
+                        // JALUR NORMAL VIA BACKEND SENDIRI
+                        printLine(`[BOT] Membuka gateway pencarian berkas Pinterest untuk: "${escapeHtml(args)}"...`, true);
+
                         try {
-                            // DISINKRONKAN KE BACKEND LOCAL (/api/pinterest?q=)
-                            const res = await fetch(`/api/pinterest?q=${encodeURIComponent(args)}`);
-                            const json = await res.json();
-                            if (json && json.ok && json.items && json.items.length > 0) {
-                                let html = '┌ 📌 <b>HASIL PINTEREST:</b><br>';
-                                json.items.slice(0, 3).forEach((item, i) => {
-                                    const imgUrl = safeUrl(item.image);
+                            const resPin = await fetch(`/api/pinterest?q=${encodeURIComponent(args)}`);
+                            const jsonPin = await resPin.json();
+
+                            if (jsonPin && jsonPin.ok && jsonPin.items.length > 0) {
+                                let htmlResult = '┌ 📌 <b>DOKUMEN GAMBAR DITEMUKAN:</b><br>';
+                                const maxResult = Math.min(jsonPin.items.length, 3);
+                                for (let i = 0; i < maxResult; i++) {
+                                    const imgUrl = safeUrl(jsonPin.items[i].image);
                                     if (imgUrl) {
-                                        html += `[${i+1}] <a href="${imgUrl}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Foto</a><br>`;
+                                        htmlResult += `├ 📷 File ${i+1}: <a href="${imgUrl}" target="_blank" style="color:#fff;text-decoration:underline;">Buka Foto Resolusi Penuh</a><br>`;
                                     }
-                                });
-                                printLine(html + '└ Selesai.', true);
-                            } else { printLine('ERROR: Gambar tidak ditemukan.', true); }
-                        } catch { printLine('ERROR: Gagal menghubungi server.', true); }
+                                }
+                                htmlResult += `└ <i>Sistem mengekstrak ${maxResult} data.</i>`;
+                                printLine(htmlResult, true);
+                            } else {
+                                printLine(`ERROR: ${escapeHtml(jsonPin.error) || 'Gambar tidak ditemukan.'}`, true);
+                            }
+                        } catch (err) {
+                            printLine('ERROR: Gateway API mengembalikan hasil kosong.', true);
+                        }
                         break;
-                    }
 
                     case 'owner':
-                        printLine('• Nama: Noir / Kanza ABCD<br>• Project: WhatsApp System Core Mod v1.6.0', true);
+                        printLine('DEVELOPER IDENTITY ACCESS:<br>• Nama: Noir / Kanza ABCD<br>• Project: WhatsApp System Core Mod v1.6.0<br>• Status: Active Core Developer.', true);
                         break;
                     case 'contact':
-                        printLine('• WhatsApp: <a href="https://wa.me/6285716366564" target="_blank" style="color: #fff; text-decoration: underline;">wa.me/6285716366564</a>', true);
+                        printLine('OFFICIAL CONTACT PROTOCOL:<br>• WhatsApp: <a href="https://wa.me/6285716366564" target="_blank" style="color: #fff; font-weight: bold; text-decoration: underline;">wa.me/6285716366564</a><br>• Jam Aktif: 24/7 System Monitor.', true);
                         break;
                     case 'sosmed':
-                        printLine('• TikTok: <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" style="color: #fff; text-decoration: underline;">@noirdcheelsyie</a><br>• Instagram: <a href="https://www.instagram.com/alwaysnoir18" target="_blank" style="color: #fff; text-decoration: underline;">@alwaysnoir18</a>', true);
+                        printLine('SOCIAL NETWORKING NODE:<br>• LinkedIn: <a href="https://www.linkedin.com/in/kanza-abcd-6444b4421" target="_blank" style="color: #fff; text-decoration: underline;">linkedin.com/in/kanza-abcd-6444b4421</a><br>• TikTok: <a href="https://tiktok.com/@noirdcheelsyie" target="_blank" style="color: #fff; text-decoration: underline;">@noirdcheelsyie</a><br>• Instagram: <a href="https://www.instagram.com/alwaysnoir18?igsh=MXE5bzZwcDg0dXByYQ==" target="_blank" style="color: #fff; text-decoration: underline;">@alwaysnoir18</a>', true);
                         break;
                     case 'homepage':
-                        printLine('<a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4" target="_blank" style="color: #00ff66; text-decoration: underline;">GABUNG WHATSAPP GROUP</a>', true);
+                        printLine('COMMUNITY HOMEPAGE LINK:<br>• WhatsApp Group: <a href="https://chat.whatsapp.com/H65wUmfUeK5Lv9Ib3nqGK4?s=cl&p=a&mlu=0&ilr=0&amv=3" target="_blank" style="color: #00ff66; font-weight: bold; text-decoration: underline;">KLIK UNTUK GABUNG KOMUNITAS</a>', true);
                         break;
                     case 'features':
-                        printLine('Active: Baileys Handler, YouTube MP3, Pinterest Engine.', true);
+                        printLine('ACTIVE MODULES:<br>┌ 🛠️ Baileys Connection Handler<br>├ 📥 Doroni Media Scraper Module<br>├ 🎵 YouTube Audio Direct Streamer<br>└ 📌 Pinterest Hybrid Engine + Ahyeon Local Node', true);
                         break;
                     case 'clear':
                         screen.innerHTML = '';
                         break;
                     default:
-                        printLine(`ERROR: Command "${cmd}" tidak dikenal.`, true);
+                        printLine(`ERROR: Command "${cmd}" tidak dikenal. Ketik <b>help</b> untuk melihat menu.`, true);
+                        playBeep(200, 0.3);
                 }
             }, 150);
         }
 
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- Panel Downloader (Form) ---
         const dlStatus = document.getElementById('dl-status');
-        function setStatus(msg, isErr = false) {
+
+        function setStatus(msg, isError = false) {
             dlStatus.textContent = msg;
-            dlStatus.style.color = isErr ? '#ff5555' : 'var(--neon-cyan)';
+            dlStatus.style.color = isError ? '#ff5555' : 'var(--neon-cyan)';
         }
 
         async function downloadSong() {
-            const q = document.getElementById('song-input').value.trim();
-            if (!q) { setStatus('Masukkan judul lagu.', true); return; }
+            const input = document.getElementById('song-input');
+            const btn = document.getElementById('song-btn');
+            const q = input.value.trim();
+            if (!q) { setStatus('Masukkan judul lagu dulu.', true); return; }
+
+            btn.disabled = true;
             setStatus(`Mencari "${q}"...`);
+            playBeep(700, 0.08);
+
             try {
                 const res = await fetch(`/api/song?q=${encodeURIComponent(q)}`);
                 const json = await res.json();
-                if (json && json.ok) {
-                    setStatus('Berhasil ditemukan!');
+                if (json.ok) {
                     const dlUrl = safeUrl(new URL(json.downloadUrl, window.location.origin).href);
+                    setStatus(`Ditemukan: ${json.title} — mengunduh...`);
                     window.open(dlUrl, '_blank');
-                    printLine(`🎵 <a href="${dlUrl}" target="_blank" style="color:#fff;text-decoration:underline;">${json.title}</a>`, true);
-                } else { setStatus('Lagu tidak ada.', true); }
-            } catch { setStatus('Gagal terhubung server.', true); }
+                    printLine(`┌ 🎵 <b>JUDUL:</b> ${escapeHtml(json.title)}<br>└ 📥 <a href="${dlUrl}" target="_blank" style="color:#fff;font-weight:bold;text-decoration:underline;">Unduh ulang MP3</a>`, true);
+                } else {
+                    setStatus(json.error || 'Lagu tidak ditemukan.', true);
+                }
+            } catch (err) {
+                setStatus('Gagal menghubungi server.', true);
+            } finally {
+                btn.disabled = false;
+            }
         }
 
         async function searchPinterest() {
-            const q = document.getElementById('pin-input').value.trim();
-            if (!q) { setStatus('Masukkan kata kunci.', true); return; }
-            setStatus(`Mencari "${q}"...`);
+            const input = document.getElementById('pin-input');
+            const btn = document.getElementById('pin-btn');
+            const q = input.value.trim();
+            if (!q) { setStatus('Masukkan kata kunci Pinterest dulu.', true); return; }
+
+            btn.disabled = true;
+            setStatus(`Mencari gambar "${q}"...`);
+            playBeep(700, 0.08);
+
             try {
                 const res = await fetch(`/api/pinterest?q=${encodeURIComponent(q)}`);
                 const json = await res.json();
-                if (json && json.ok && json.items && json.items.length > 0) {
-                    setStatus('Gambar ditemukan.');
-                    let html = '📌 <b>PINTEREST:</b><br>';
-                    json.items.slice(0, 3).forEach(item => {
+                if (json.ok && json.items.length > 0) {
+                    setStatus(`${json.items.length} gambar ditemukan.`);
+                    let html = '┌ 📌 <b>HASIL PINTEREST:</b><br>';
+                    json.items.slice(0, 6).forEach((item) => {
                         const imgUrl = safeUrl(item.image);
                         if (imgUrl) {
-                            html += `<img src="${imgUrl}" class="terminal-img"><br>`;
+                            html += `<img src="${imgUrl}" class="terminal-img" alt="${escapeHtml(item.caption)}"><br>`;
                         }
                     });
+                    html += `└ <i>Menampilkan ${Math.min(json.items.length, 6)} gambar.</i>`;
                     printLine(html, true);
-                } else { setStatus('Gambar tidak ada.', true); }
-            } catch { setStatus('Gagal terhubung server.', true); }
+                } else {
+                    setStatus(json.error || 'Gambar tidak ditemukan.', true);
+                }
+            } catch (err) {
+                setStatus('Gagal menghubungi server.', true);
+            } finally {
+                btn.disabled = false;
+            }
         }
+
+        ['song-input', 'pin-input'].forEach((id) => {
+            document.getElementById(id).addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (id === 'song-input') downloadSong(); else searchPinterest();
+                }
+            });
+        });
     </script>
 </body>
 </html>
